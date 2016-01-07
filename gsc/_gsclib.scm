@@ -382,7 +382,8 @@
                  (if (##fixnum? env) '() env))))
              stdin-redirection: #f
              stdout-redirection: #f
-             stderr-redirection: #f))))
+             stderr-redirection: #f
+             show-console: #f))))
 
 (define (##extract-target options)
   (let ((t (##assq 'target options)))
