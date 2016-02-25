@@ -249,5 +249,17 @@ extern ___SCMOBJ ___snapshot_allocations
    ___P((),
         ());
 
+extern ___SCMOBJ ___get_allocation_object
+   ___P((int),
+        ());
+
+extern const char* ___get_allocation_file
+   ___P((int),
+        ());
+
+extern int ___get_allocation_line
+   ___P((int),
+        ());
+
 
 #endif

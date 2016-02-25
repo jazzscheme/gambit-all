@@ -6581,11 +6581,16 @@ ___PSDKR)
 
 int ___tracking_allocations = 0;
 
-___SCMOBJ ___track_allocation(___SCMOBJ obj)
+const char* AllocationFiles[MAX_ALLOCATIONS];
+int AllocationLines[MAX_ALLOCATIONS];
+
+___SCMOBJ ___track_allocation(___SCMOBJ obj, const char* file, int line)
 {
     if (AllocationsCount < MAX_ALLOCATIONS)
     {
         Allocations[AllocationsCount] = obj;
+        AllocationFiles[AllocationsCount] = file;
+        AllocationLines[AllocationsCount] = line;
         AllocationsCount++;
     }
     return obj;
@@ -6598,14 +6603,29 @@ void ___reset_allocations()
 
 ___SCMOBJ ___snapshot_allocations()
 {
-    ___SCMOBJ r = ___EXT(___alloc_scmobj) (NULL, ___sVECTOR, AllocationsCount*sizeof(___SCMOBJ));
+    ___SCMOBJ r = ___EXT(___alloc_scmobj)(NULL, ___sVECTOR, AllocationsCount*sizeof(___SCMOBJ));
     ___SCMOBJ *ptr = ___CAST(___SCMOBJ*,___BODY(r));
-    for (int i=0; i<AllocationsCount; i++)
+    for (int n=0; n<AllocationsCount; n++)
     {
-      *ptr++ = Allocations[i];
+        *ptr++ = Allocations[n];
     }
     ___EXT(___release_scmobj)(r);
     return r;
+}
+
+___SCMOBJ ___get_allocation_object(int n)
+{
+    return Allocations[n];
+}
+
+const char* ___get_allocation_file(int n)
+{
+    return AllocationFiles[n];
+}
+
+int ___get_allocation_line(int n)
+{
+    return AllocationLines[n];
 }
 
 

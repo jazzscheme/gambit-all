@@ -4208,6 +4208,21 @@ end-of-code
 
   ))
 
+(define-prim ##get-allocation-object
+  (c-lambda (int)
+            scheme-object
+   "___return(___get_allocation_object(___arg1));"))
+
+(define-prim ##get-allocation-file
+  (c-lambda (int)
+            char-string
+   "___return((char*) ___get_allocation_file(___arg1));"))
+
+(define-prim ##get-allocation-line
+  (c-lambda (int)
+            int
+   "___return(___get_allocation_line(___arg1));"))
+
 ;;;----------------------------------------------------------------------------
 
 ;;; Activity log operations.
