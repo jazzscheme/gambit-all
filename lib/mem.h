@@ -241,5 +241,13 @@ extern ___F64 ___bytes_allocated
    ___P((___PSDNC),
         ());
 
+extern void ___reset_allocations
+   ___P((),
+        ());
+
+extern ___SCMOBJ ___snapshot_allocations
+   ___P((),
+        ());
+
 
 #endif

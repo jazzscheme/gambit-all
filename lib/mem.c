@@ -5434,6 +5434,10 @@ ___SCMOBJ ht_dst;)
   return ht_dst;
 }
 
+#define MAX_ALLOCATIONS 1024
+
+___SCMOBJ Allocations[MAX_ALLOCATIONS];
+int AllocationsCount = 0;
 
 ___HIDDEN void move_continuation
    ___P((___PSDNC),
@@ -5523,6 +5527,8 @@ ___SIZE_TS requested_words_still;)
   ___SIZE_TS target_movable_space;
   int target_nb_sections;
   ___SIZE_TS live;
+
+  mark_array (___PSP Allocations, AllocationsCount);
 
   determine_occupied_words (___vms);
 
@@ -6570,6 +6576,36 @@ ___PSDKR)
   prepare_mem_pstate (___ps);
 
   return 0;
+}
+
+
+int ___tracking_allocations = 0;
+
+___SCMOBJ ___track_allocation(___SCMOBJ obj)
+{
+    if (AllocationsCount < MAX_ALLOCATIONS)
+    {
+        Allocations[AllocationsCount] = obj;
+        AllocationsCount++;
+    }
+    return obj;
+}
+
+void ___reset_allocations()
+{
+    AllocationsCount = 0;
+}
+
+___SCMOBJ ___snapshot_allocations()
+{
+    ___SCMOBJ r = ___EXT(___alloc_scmobj) (NULL, ___sVECTOR, AllocationsCount*sizeof(___SCMOBJ));
+    ___SCMOBJ *ptr = ___CAST(___SCMOBJ*,___BODY(r));
+    for (int i=0; i<AllocationsCount; i++)
+    {
+      *ptr++ = Allocations[i];
+    }
+    ___EXT(___release_scmobj)(r);
+    return r;
 }
 
 

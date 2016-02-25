@@ -2274,6 +2274,18 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
 
 #endif
 
+/* Track allocations */
+
+#define ___TRACK_ALLOCATIONS
+
+#ifdef ___TRACK_ALLOCATIONS
+extern int ___tracking_allocations;
+extern ___SCMOBJ ___track_allocation(___SCMOBJ);
+#define ___TRACK_ALLOC(obj)(___temp = (obj), (___tracking_allocations ? ___track_allocation(___temp) : ___temp))
+#else
+#define ___TRACK_ALLOC(obj)obj
+#endif
+
 /* Type tests */
 
 #define ___TAG(ptr,tag)(___CAST(___WORD,ptr)+(tag))
@@ -2345,7 +2357,7 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
 (___ALLOC_ALIGN64(1+___FLONUM_SIZE), \
  ___hp[-(1+___FLONUM_SIZE)] = ___MAKE_HD_WORDS(___FLONUM_SIZE,___sFLONUM), \
  *___CAST(___F64*,___hp-___FLONUM_SIZE) = (x), \
- ___TAG((___hp-(1+___FLONUM_SIZE)),___tSUBTYPED))
+ ___TRACK_ALLOC(___TAG((___hp-(1+___FLONUM_SIZE)),___tSUBTYPED)))
 
 #define ___D_F64(x)___F64 x;
 #define ___SET_F64(x,y)x=y;
@@ -2429,7 +2441,7 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
   : (___ALLOC(1+___WORDS(1<<2)), \
      ___hp[-(1+___WORDS(1<<2))] = ___MAKE_HD_BYTES(1<<2,___sBIGNUM), \
      ___BIGASTORESIGNED(___hp,-1,___s32_temp), \
-     ___TAG((___hp-(1+___WORDS(1<<2))),___tSUBTYPED))))
+     ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(1<<2))),___tSUBTYPED)))))
 
 #define ___U32BOX(x) \
 (___u32_temp=(x), \
@@ -2440,11 +2452,11 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
         ___hp[-(1+___WORDS(2<<2))] = ___MAKE_HD_BYTES(2<<2,___sBIGNUM), \
         ___BIGASTORE(___hp,-2,___u32_temp), \
         ___BIGASTORE(___hp,-1,0), \
-        ___TAG((___hp-(1+___WORDS(2<<2))),___tSUBTYPED)) \
+        ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(2<<2))),___tSUBTYPED))) \
      : (___ALLOC(1+___WORDS(1<<2)), \
         ___hp[-(1+___WORDS(1<<2))] = ___MAKE_HD_BYTES(1<<2,___sBIGNUM), \
         ___BIGASTORE(___hp,-1,___u32_temp), \
-        ___TAG((___hp-(1+___WORDS(1<<2))),___tSUBTYPED)))))
+        ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(1<<2))),___tSUBTYPED))))))
 
 #define ___S64BOX(x) \
 (___s64_temp=(x), \
@@ -2455,12 +2467,12 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
      : (___ALLOC(1+___WORDS(1<<2)), \
         ___hp[-(1+___WORDS(1<<2))] = ___MAKE_HD_BYTES(1<<2,___sBIGNUM), \
         ___BIGASTORE(___hp,-1,___s32_temp), \
-        ___TAG((___hp-(1+___WORDS(1<<2))),___tSUBTYPED))) \
+        ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(1<<2))),___tSUBTYPED)))) \
   : (___ALLOC(1+___WORDS(2<<2)), \
      ___hp[-(1+___WORDS(2<<2))] = ___MAKE_HD_BYTES(2<<2,___sBIGNUM), \
      ___BIGASTORE(___hp,-2,___s32_temp), \
      ___BIGASTORESIGNED(___hp,-1,___S64_hi32(___s64_temp)), \
-     ___TAG((___hp-(1+___WORDS(2<<2))),___tSUBTYPED))))
+     ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(2<<2))),___tSUBTYPED)))))
 
 #define ___U64BOX(x) \
 (___u64_temp=(x), \
@@ -2470,7 +2482,7 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
      ___BIGASTORE(___hp,-3,___U64_lo32(___u64_temp)), \
      ___BIGASTORE(___hp,-2,___U64_hi32(___u64_temp)), \
      ___BIGASTORE(___hp,-1,0), \
-     ___TAG((___hp-(1+___WORDS(3<<2))),___tSUBTYPED)) \
+     ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(3<<2))),___tSUBTYPED))) \
   : (((___u32_temp = ___U64_lo32(___u64_temp)) & (___CAST_U32(1)<<31)) \
      == ___U64_hi32(___u64_temp) \
      ? (___u32_temp <= ___MAX_FIX \
@@ -2478,12 +2490,12 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
         : (___ALLOC(1+___WORDS(1<<2)), \
            ___hp[-(1+___WORDS(1<<2))] = ___MAKE_HD_BYTES(1<<2,___sBIGNUM), \
            ___BIGASTORE(___hp,-1,___u32_temp), \
-           ___TAG((___hp-(1+___WORDS(1<<2))),___tSUBTYPED))) \
+           ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(1<<2))),___tSUBTYPED)))) \
      : (___ALLOC(1+___WORDS(2<<2)), \
         ___hp[-(1+___WORDS(2<<2))] = ___MAKE_HD_BYTES(2<<2,___sBIGNUM), \
         ___BIGASTORE(___hp,-2,___u32_temp), \
         ___BIGASTORESIGNED(___hp,-1,___S64_hi32(___u64_temp)), \
-        ___TAG((___hp-(1+___WORDS(2<<2))),___tSUBTYPED)))))
+        ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(2<<2))),___tSUBTYPED))))))
 
 #else
 
@@ -2498,12 +2510,12 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
      ? (___ALLOC(1+___WORDS(1<<2)), \
         ___hp[-(1+___WORDS(1<<2))] = ___MAKE_HD_BYTES(1<<2,___sBIGNUM), \
         ___BIGASTORE(___hp,-1,___S64_lo32(___s64_temp)), \
-        ___TAG((___hp-(1+___WORDS(1<<2))),___tSUBTYPED)) \
+        ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(1<<2))),___tSUBTYPED))) \
      : (___ALLOC(1+___WORDS(2<<2)), \
         ___hp[-(1+___WORDS(2<<2))] = ___MAKE_HD_BYTES(2<<2,___sBIGNUM), \
         ___BIGASTORE(___hp,-2,___S64_lo32(___s64_temp)), \
         ___BIGASTORESIGNED(___hp,-1,___S64_hi32(___s64_temp)), \
-        ___TAG((___hp-(1+___WORDS(2<<2))),___tSUBTYPED)))))
+        ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(2<<2))),___tSUBTYPED))))))
 
 #define ___U64BOX(x) \
 (___u64_temp=(x), \
@@ -2515,17 +2527,17 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
         ___BIGASTORE(___hp,-3,___U64_lo32(___u64_temp)), \
         ___BIGASTORE(___hp,-2,___U64_hi32(___u64_temp)), \
         ___BIGASTORE(___hp,-1,0), \
-        ___TAG((___hp-(1+___WORDS(3<<2))),___tSUBTYPED)) \
+        ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(3<<2))),___tSUBTYPED))) \
      : ((___U64_lo32(___u64_temp) & (___CAST_U32(1)<<31)) == ___U64_hi32(___u64_temp) \
         ? (___ALLOC(1+___WORDS(1<<2)), \
            ___hp[-(1+___WORDS(1<<2))] = ___MAKE_HD_BYTES(1<<2,___sBIGNUM), \
            ___BIGASTORE(___hp,-1,___S64_lo32(___u64_temp)), \
-           ___TAG((___hp-(1+___WORDS(1<<2))),___tSUBTYPED)) \
+           ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(1<<2))),___tSUBTYPED))) \
         : (___ALLOC(1+___WORDS(2<<2)), \
            ___hp[-(1+___WORDS(2<<2))] = ___MAKE_HD_BYTES(2<<2,___sBIGNUM), \
            ___BIGASTORE(___hp,-2,___S64_lo32(___u64_temp)), \
            ___BIGASTORESIGNED(___hp,-1,___S64_hi32(___u64_temp)), \
-           ___TAG((___hp-(1+___WORDS(2<<2))),___tSUBTYPED))))))
+           ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(2<<2))),___tSUBTYPED)))))))
 
 #endif
 
@@ -2560,7 +2572,7 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
   : (___ALLOC_ALIGN64(1+___WORDS(1<<3)), \
      ___hp[-(1+___WORDS(1<<3))] = ___MAKE_HD_BYTES(1<<3,___sBIGNUM), \
      ___BIGASTORESIGNED(___hp,-1,___S64_from_SM32(___s32_temp)), \
-     ___TAG((___hp-(1+___WORDS(1<<3))),___tSUBTYPED))))
+     ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(1<<3))),___tSUBTYPED)))))
 
 #define ___U32BOX(x) \
 (___u32_temp=(x), \
@@ -2569,7 +2581,7 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
   : (___ALLOC_ALIGN64(1+___WORDS(1<<3)), \
      ___hp[-(1+___WORDS(1<<3))] = ___MAKE_HD_BYTES(1<<3,___sBIGNUM), \
      ___BIGASTORE(___hp,-1,___U64_from_UM32(___u32_temp)), \
-     ___TAG((___hp-(1+___WORDS(1<<3))),___tSUBTYPED))))
+     ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(1<<3))),___tSUBTYPED)))))
 
 #else
 
@@ -2585,7 +2597,7 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
   : (___ALLOC_ALIGN64(1+___WORDS(1<<3)), \
      ___hp[-(1+___WORDS(1<<3))] = ___MAKE_HD_BYTES(1<<3,___sBIGNUM), \
      ___BIGASTORESIGNED(___hp,-1,___s64_temp), \
-     ___TAG((___hp-(1+___WORDS(1<<3))),___tSUBTYPED))))
+     ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(1<<3))),___tSUBTYPED)))))
 
 #define ___U64BOX(x) \
 (___u64_temp=(x), \
@@ -2596,11 +2608,11 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
         ___hp[-(1+___WORDS(2<<3))] = ___MAKE_HD_BYTES(2<<3,___sBIGNUM), \
         ___BIGASTORE(___hp,-2,___u64_temp), \
         ___BIGASTORE(___hp,-1,0), \
-        ___TAG((___hp-(1+___WORDS(2<<3))),___tSUBTYPED)) \
+        ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(2<<3))),___tSUBTYPED))) \
      : (___ALLOC_ALIGN64(1+___WORDS(1<<3)), \
         ___hp[-(1+___WORDS(1<<3))] = ___MAKE_HD_BYTES(1<<3,___sBIGNUM), \
         ___BIGASTORE(___hp,-1,___u64_temp), \
-        ___TAG((___hp-(1+___WORDS(1<<3))),___tSUBTYPED)))))
+        ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(1<<3))),___tSUBTYPED))))))
 
 #endif
 
@@ -2612,7 +2624,7 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
 (___ALLOC(1+___WORDS(1<<2)), \
  ___hp[-(1+___WORDS(1<<2))] = ___MAKE_HD_BYTES(1<<2,___sBIGNUM), \
  ___BIGASTORESIGNED(___hp,-1,___INT(x)), \
- ___TAG((___hp-(1+___WORDS(1<<2))),___tSUBTYPED))
+ ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(1<<2))),___tSUBTYPED)))
 
 #else
 
@@ -2621,7 +2633,7 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
  ___hp[-(1+___WORDS(2<<2))] = ___MAKE_HD_BYTES(2<<2,___sBIGNUM), \
  ___BIGASTORE(___hp,-2,___S64_lo32(___INT(x))), \
  ___BIGASTORESIGNED(___hp,-1,___S64_hi32(___INT(x))), \
- ___TAG((___hp-(1+___WORDS(2<<2))),___tSUBTYPED))
+ ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(2<<2))),___tSUBTYPED)))
 
 #endif
 
@@ -2631,7 +2643,7 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
 (___ALLOC_ALIGN64(1+___WORDS(1<<3)), \
  ___hp[-(1+___WORDS(1<<3))] = ___MAKE_HD_BYTES(1<<3,___sBIGNUM), \
  ___BIGASTORESIGNED(___hp,-1,___CAST(___BIGADIGIT,___INT(x))), \
- ___TAG((___hp-(1+___WORDS(1<<3))),___tSUBTYPED))
+ ___TRACK_ALLOC(___TAG((___hp-(1+___WORDS(1<<3))),___tSUBTYPED)))
 
 #endif
 
@@ -3230,7 +3242,7 @@ ___FIX((((___BIGMDOUBLEDIGIT)___BIGMFETCH(___BODY_AS(u,___tSUBTYPED),___INT(___B
 ___hp[___PAIR_CAR_OFS+1]=x,___hp[___PAIR_CDR_OFS+1]=y,___ALLOC(___PAIR_SIZE+1))
 #define ___ALLOC_PAIR(x,y){___hp[0]=___MAKE_HD_WORDS(___PAIR_SIZE,___sPAIR); \
 ___hp[___PAIR_CAR_OFS+1]=x;___hp[___PAIR_CDR_OFS+1]=y;___ALLOC(___PAIR_SIZE+1);}
-#define ___CONS(x,y)(___ALLOC_PAIR_EXPR(x,y),___TAG((___hp-___PAIR_SIZE-1),___tPAIR))
+#define ___CONS(x,y)(___ALLOC_PAIR_EXPR(x,y),___TRACK_ALLOC(___TAG((___hp-___PAIR_SIZE-1),___tPAIR)))
 
 #define ___SETCAR(obj,car)___PAIR_CAR(obj)=car;
 #define ___SETCDR(obj,cdr)___PAIR_CDR(obj)=cdr;
@@ -3268,7 +3280,7 @@ ___hp[___PAIR_CAR_OFS+1]=x;___hp[___PAIR_CDR_OFS+1]=y;___ALLOC(___PAIR_SIZE+1);}
 /* APPLY-able operations */
 
 #define ___BOX(x)(___ALLOC(2),___hp[-2]=___MAKE_HD_WORDS(1,___sBOXVALUES), \
-___hp[-1]=x,___TAG((___hp-2),___tSUBTYPED))
+___hp[-1]=x,___TRACK_ALLOC(___TAG((___hp-2),___tSUBTYPED)))
 #define ___UNBOX(x)___BODY_AS(x,___tSUBTYPED)[0]
 #define ___SETBOX(x,y)___BODY_AS(x,___tSUBTYPED)[0]=y;
 
@@ -3388,7 +3400,7 @@ ___STORE_U64(___BODY_AS(x,___tSUBTYPED),(y)>>___TB,___U64UNBOX(z));
 #define ___RATNUMMAKE(num,den) \
 (___ALLOC(___RATNUM_SIZE+1), \
 ___hp[-3]=___MAKE_HD_WORDS(___RATNUM_SIZE,___sRATNUM), \
-___hp[-2]=num,___hp[-1]=den,___TAG((___hp-___RATNUM_SIZE-1),___tSUBTYPED))
+___hp[-2]=num,___hp[-1]=den,___TRACK_ALLOC(___TAG((___hp-___RATNUM_SIZE-1),___tSUBTYPED)))
 
 #define ___RATNUMNUMERATOR(obj)___FIELD(obj,0)
 #define ___RATNUMDENOMINATOR(obj)___FIELD(obj,1)
@@ -3396,7 +3408,7 @@ ___hp[-2]=num,___hp[-1]=den,___TAG((___hp-___RATNUM_SIZE-1),___tSUBTYPED))
 #define ___CPXNUMMAKE(real,imag) \
 (___ALLOC(___CPXNUM_SIZE+1), \
 ___hp[-3]=___MAKE_HD_WORDS(___CPXNUM_SIZE,___sCPXNUM), \
-___hp[-2]=real,___hp[-1]=imag,___TAG((___hp-___CPXNUM_SIZE-1),___tSUBTYPED))
+___hp[-2]=real,___hp[-1]=imag,___TRACK_ALLOC(___TAG((___hp-___CPXNUM_SIZE-1),___tSUBTYPED)))
 
 #define ___CPXNUMREAL(obj)___FIELD(obj,0)
 #define ___CPXNUMIMAG(obj)___FIELD(obj,1)
@@ -3404,7 +3416,7 @@ ___hp[-2]=real,___hp[-1]=imag,___TAG((___hp-___CPXNUM_SIZE-1),___tSUBTYPED))
 #define ___MAKEPROMISE(x) \
 (___ALLOC(___PROMISE_SIZE+1), \
 ___hp[-3]=___MAKE_HD_WORDS(___PROMISE_SIZE,___sPROMISE), \
-___hp[-2]=x, ___hp[-1]=___TAG((___hp-___PROMISE_SIZE-1),___tSUBTYPED))
+___hp[-2]=x, ___hp[-1]=___TRACK_ALLOC(___TAG((___hp-___PROMISE_SIZE-1),___tSUBTYPED)))
 
 #define ___PROMISETHUNK(obj)___FIELD(obj,___PROMISE_THUNK)
 #define ___PROMISETHUNKSET(obj,val)___FIELD(obj,___PROMISE_THUNK) = val;
@@ -3414,7 +3426,7 @@ ___hp[-2]=x, ___hp[-1]=___TAG((___hp-___PROMISE_SIZE-1),___tSUBTYPED))
 #define ___MAKECONTINUATION(frame,denv) \
 (___ALLOC(___CONTINUATION_SIZE+1), \
 ___hp[-3]=___MAKE_HD_WORDS(___CONTINUATION_SIZE,___sCONTINUATION), \
-___hp[-2]=frame,___hp[-1]=denv,___TAG((___hp-___CONTINUATION_SIZE-1),___tSUBTYPED))
+___hp[-2]=frame,___hp[-1]=denv,___TRACK_ALLOC(___TAG((___hp-___CONTINUATION_SIZE-1),___tSUBTYPED)))
 
 #define ___CONTINUATIONFRAME(obj)___FIELD(obj,___CONTINUATION_FRAME)
 #define ___CONTINUATIONFRAMESET(obj,val)___FIELD(obj,___CONTINUATION_FRAME) = val;
@@ -3426,7 +3438,7 @@ ___hp[-2]=frame,___hp[-1]=denv,___TAG((___hp-___CONTINUATION_SIZE-1),___tSUBTYPE
 #define ___MAKESYMBOL(name,hash) \
 (___ALLOC(___SYMBOL_SIZE+1), \
 ___hp[-5]=___MAKE_HD_WORDS(___SYMBOL_SIZE,___sSYMBOL), \
-___hp[-4]=name,___hp[-3]=hash,___hp[-2]=___FAL,___hp[-1]=0,___TAG((___hp-___SYMBOL_SIZE-1),___tSUBTYPED))
+___hp[-4]=name,___hp[-3]=hash,___hp[-2]=___FAL,___hp[-1]=0,___TRACK_ALLOC(___TAG((___hp-___SYMBOL_SIZE-1),___tSUBTYPED)))
 
 #define ___SYMBOLNAME(obj)___FIELD(obj,___SYMKEY_NAME)
 #define ___SYMBOLNAMESET(obj,val)___FIELD(obj,___SYMKEY_NAME) = val;
@@ -3437,7 +3449,7 @@ ___hp[-4]=name,___hp[-3]=hash,___hp[-2]=___FAL,___hp[-1]=0,___TAG((___hp-___SYMB
 #define ___MAKEKEYWORD(name,hash) \
 (___ALLOC(___KEYWORD_SIZE+1), \
 ___hp[-4]=___MAKE_HD_WORDS(___KEYWORD_SIZE,___sKEYWORD), \
-___hp[-3]=name,___hp[-2]=hash,___hp[-1]=___FAL,___TAG((___hp-___KEYWORD_SIZE-1),___tSUBTYPED))
+___hp[-3]=name,___hp[-2]=hash,___hp[-1]=___FAL,___TRACK_ALLOC(___TAG((___hp-___KEYWORD_SIZE-1),___tSUBTYPED)))
 
 #define ___KEYWORDNAME(obj)___FIELD(obj,___SYMKEY_NAME)
 #define ___KEYWORDNAMESET(obj,val)___FIELD(obj,___SYMKEY_NAME) = val;
@@ -3452,7 +3464,7 @@ ___hp[2]=testator, \
 ___hp[3]=action, \
 ___ps->mem.nonexecutable_wills_=___TAG(___hp,0), \
 ___ALLOC(___WILL_SIZE+1), \
-___TAG((___hp-___WILL_SIZE-1),___tSUBTYPED))
+___TRACK_ALLOC(___TAG((___hp-___WILL_SIZE-1),___tSUBTYPED)))
 
 #define ___WILLTESTATOR(obj)___FIELD(obj,___WILL_TESTATOR)
 #define ___WILLTESTATORSET(obj,val)___FIELD(obj,___WILL_TESTATOR) = val;
@@ -5347,7 +5359,7 @@ ___JUMPEXTPRM(___NOTHING,___GSTATE->handler_get_key_rest)}
 #define ___BOOLEAN(x)(x)?___TRU:___FAL
 #define ___EXPR(x)x;
 
-#define ___ALLOC_CLO(n)(___ALLOC(n+2),___TAG((___hp-n-2),___tSUBTYPED))
+#define ___ALLOC_CLO(n)(___ALLOC(n+2),___TRACK_ALLOC(___TAG((___hp-n-2),___tSUBTYPED)))
 #define ___BEGIN_SETUP_CLO(n,clo,lbl) \
 {___WORD *___ptr=___UNTAG_AS(clo,___tSUBTYPED); \
 ___ptr[0]=___MAKE_HD_WORDS((n+1),___sPROCEDURE); ___ptr[1]=___LBL(lbl);
@@ -5357,9 +5369,9 @@ ___ptr[0]=___MAKE_HD_WORDS((n+1),___sPROCEDURE); ___ptr[1]=___LBL(lbl);
 #define ___SET_CLO(x,y,z)___BODY_AS(x,___tSUBTYPED)[y]=z;
 
 #define ___BEGIN_ALLOC_LIST(n,last)___ALLOC_PAIR(last,___NUL)
-#define ___ADD_LIST_ELEM(i,val)___ALLOC_PAIR(val,___TAG((___hp-___PAIR_SIZE-1),___tPAIR))
+#define ___ADD_LIST_ELEM(i,val)___ALLOC_PAIR(val,___TRACK_ALLOC(___TAG((___hp-___PAIR_SIZE-1),___tPAIR)))
 #define ___END_ALLOC_LIST(n)
-#define ___GET_LIST(n) ___TAG((___hp-___PAIR_SIZE-1),___tPAIR)
+#define ___GET_LIST(n) ___TRACK_ALLOC(___TAG((___hp-___PAIR_SIZE-1),___tPAIR))
 
 #define ___BEGIN_ALLOC_STRING(n) \
 ___hp[0]=___MAKE_HD_BYTES(n<<___LCS,___sSTRING);
@@ -5368,43 +5380,43 @@ ___STORE_U8(___hp+1,i,___INT(val)), \
 ___STORE_U16(___hp+1,i,___INT(val)), \
 ___STORE_U32(___hp+1,i,___INT(val)));
 #define ___END_ALLOC_STRING(n)___ALLOC(___WORDS(n<<___LCS)+1);
-#define ___GET_STRING(n)___TAG((___hp-___WORDS(n<<___LCS)-1),___tSUBTYPED)
+#define ___GET_STRING(n)___TRACK_ALLOC(___TAG((___hp-___WORDS(n<<___LCS)-1),___tSUBTYPED))
 
 #define ___BEGIN_ALLOC_S8VECTOR(n) \
 ___hp[0]=___MAKE_HD_BYTES(n,___sS8VECTOR);
 #define ___ADD_S8VECTOR_ELEM(i,val)___STORE_S8(___hp+1,i,___INT(val));
 #define ___END_ALLOC_S8VECTOR(n)___ALLOC(___WORDS(n)+1);
-#define ___GET_S8VECTOR(n)___TAG((___hp-___WORDS(n)-1),___tSUBTYPED)
+#define ___GET_S8VECTOR(n)___TRACK_ALLOC(___TAG((___hp-___WORDS(n)-1),___tSUBTYPED))
 
 #define ___BEGIN_ALLOC_U8VECTOR(n) \
 ___hp[0]=___MAKE_HD_BYTES(n,___sU8VECTOR);
 #define ___ADD_U8VECTOR_ELEM(i,val)___STORE_U8(___hp+1,i,___INT(val));
 #define ___END_ALLOC_U8VECTOR(n)___ALLOC(___WORDS(n)+1);
-#define ___GET_U8VECTOR(n)___TAG((___hp-___WORDS(n)-1),___tSUBTYPED)
+#define ___GET_U8VECTOR(n)___TRACK_ALLOC(___TAG((___hp-___WORDS(n)-1),___tSUBTYPED))
 
 #define ___BEGIN_ALLOC_S16VECTOR(n) \
 ___hp[0]=___MAKE_HD_BYTES(n<<1,___sS16VECTOR);
 #define ___ADD_S16VECTOR_ELEM(i,val)___STORE_S16(___hp+1,i,___INT(val));
 #define ___END_ALLOC_S16VECTOR(n)___ALLOC(___WORDS(n<<1)+1);
-#define ___GET_S16VECTOR(n)___TAG((___hp-___WORDS(n<<1)-1),___tSUBTYPED)
+#define ___GET_S16VECTOR(n)___TRACK_ALLOC(___TAG((___hp-___WORDS(n<<1)-1),___tSUBTYPED))
 
 #define ___BEGIN_ALLOC_U16VECTOR(n) \
 ___hp[0]=___MAKE_HD_BYTES(n<<1,___sU16VECTOR);
 #define ___ADD_U16VECTOR_ELEM(i,val)___STORE_U16(___hp+1,i,___INT(val));
 #define ___END_ALLOC_U16VECTOR(n)___ALLOC(___WORDS(n<<1)+1);
-#define ___GET_U16VECTOR(n)___TAG((___hp-___WORDS(n<<1)-1),___tSUBTYPED)
+#define ___GET_U16VECTOR(n)___TRACK_ALLOC(___TAG((___hp-___WORDS(n<<1)-1),___tSUBTYPED))
 
 #define ___BEGIN_ALLOC_S32VECTOR(n) \
 ___hp[0]=___MAKE_HD_BYTES(n<<2,___sS32VECTOR);
 #define ___ADD_S32VECTOR_ELEM(i,val)___STORE_S32(___hp+1,i,___S32UNBOX(val));
 #define ___END_ALLOC_S32VECTOR(n)___ALLOC(___WORDS(n<<2)+1);
-#define ___GET_S32VECTOR(n)___TAG((___hp-___WORDS(n<<2)-1),___tSUBTYPED)
+#define ___GET_S32VECTOR(n)___TRACK_ALLOC(___TAG((___hp-___WORDS(n<<2)-1),___tSUBTYPED))
 
 #define ___BEGIN_ALLOC_U32VECTOR(n) \
 ___hp[0]=___MAKE_HD_BYTES(n<<2,___sU32VECTOR);
 #define ___ADD_U32VECTOR_ELEM(i,val)___STORE_U32(___hp+1,i,___U32UNBOX(val));
 #define ___END_ALLOC_U32VECTOR(n)___ALLOC(___WORDS(n<<2)+1);
-#define ___GET_U32VECTOR(n)___TAG((___hp-___WORDS(n<<2)-1),___tSUBTYPED)
+#define ___GET_U32VECTOR(n)___TRACK_ALLOC(___TAG((___hp-___WORDS(n<<2)-1),___tSUBTYPED))
 
 #if ___SCMOBJ_WIDTH == 32
 
@@ -5413,14 +5425,14 @@ ___hp[0]=___MAKE_HD_BYTES(n<<2,___sU32VECTOR);
 ___ptr[-1]=___MAKE_HD_BYTES(n<<3,___sS64VECTOR);
 #define ___ADD_S64VECTOR_ELEM(i,val)___STORE_S64(___ptr,i,___S64UNBOX(val));
 #define ___END_ALLOC_S64VECTOR(n)___ALLOC(___WORDS(n<<3)+2);}
-#define ___GET_S64VECTOR(n)___TAG((((___WORD*)((___WORD)(___hp-___WORDS(n<<3))&~7))-1),___tSUBTYPED)
+#define ___GET_S64VECTOR(n)___TRACK_ALLOC(___TAG((((___WORD*)((___WORD)(___hp-___WORDS(n<<3))&~7))-1),___tSUBTYPED))
 
 #define ___BEGIN_ALLOC_U64VECTOR(n) \
 {___WORD *___ptr = (___WORD*)((___WORD)(___hp+2)&~7); \
 ___ptr[-1]=___MAKE_HD_BYTES(n<<3,___sU64VECTOR);
 #define ___ADD_U64VECTOR_ELEM(i,val)___STORE_U64(___ptr,i,___U64UNBOX(val));
 #define ___END_ALLOC_U64VECTOR(n)___ALLOC(___WORDS(n<<3)+2);}
-#define ___GET_U64VECTOR(n)___TAG((((___WORD*)((___WORD)(___hp-___WORDS(n<<3))&~7))-1),___tSUBTYPED)
+#define ___GET_U64VECTOR(n)___TRACK_ALLOC(___TAG((((___WORD*)((___WORD)(___hp-___WORDS(n<<3))&~7))-1),___tSUBTYPED))
 
 #else
 
@@ -5428,13 +5440,13 @@ ___ptr[-1]=___MAKE_HD_BYTES(n<<3,___sU64VECTOR);
 ___hp[0]=___MAKE_HD_BYTES(n<<3,___sS64VECTOR);
 #define ___ADD_S64VECTOR_ELEM(i,val)___STORE_S64(___hp+1,i,___S64UNBOX(val));
 #define ___END_ALLOC_S64VECTOR(n)___ALLOC(___WORDS(n<<3)+1);
-#define ___GET_S64VECTOR(n)___TAG((___hp-___WORDS(n<<3)-1),___tSUBTYPED)
+#define ___GET_S64VECTOR(n)___TRACK_ALLOC(___TAG((___hp-___WORDS(n<<3)-1),___tSUBTYPED))
 
 #define ___BEGIN_ALLOC_U64VECTOR(n) \
 ___hp[0]=___MAKE_HD_BYTES(n<<3,___sU64VECTOR);
 #define ___ADD_U64VECTOR_ELEM(i,val)___STORE_U64(___hp+1,i,___U64UNBOX(val));
 #define ___END_ALLOC_U64VECTOR(n)___ALLOC(___WORDS(n<<3)+1);
-#define ___GET_U64VECTOR(n)___TAG((___hp-___WORDS(n<<3)-1),___tSUBTYPED)
+#define ___GET_U64VECTOR(n)___TRACK_ALLOC(___TAG((___hp-___WORDS(n<<3)-1),___tSUBTYPED))
 
 #endif
 
@@ -5446,7 +5458,7 @@ ___hp[0]=___MAKE_HD_BYTES(n<<2,___sF32VECTOR);
 #define ___ADD_F32VECTOR_ELEM(i,val);
 #endif
 #define ___END_ALLOC_F32VECTOR(n)___ALLOC(___WORDS(n<<2)+1);
-#define ___GET_F32VECTOR(n)___TAG((___hp-___WORDS(n<<2)-1),___tSUBTYPED)
+#define ___GET_F32VECTOR(n)___TRACK_ALLOC(___TAG((___hp-___WORDS(n<<2)-1),___tSUBTYPED))
 
 #if ___SCMOBJ_WIDTH == 32
 
@@ -5455,7 +5467,7 @@ ___hp[0]=___MAKE_HD_BYTES(n<<2,___sF32VECTOR);
 ___ptr[-1]=___MAKE_HD_BYTES(n<<3,___sF64VECTOR);
 #define ___ADD_F64VECTOR_ELEM(i,val)((___F64*)___ptr)[i]=(val);
 #define ___END_ALLOC_F64VECTOR(n)___ALLOC(___WORDS(n<<3)+2);}
-#define ___GET_F64VECTOR(n)___TAG((((___WORD*)((___WORD)(___hp-___WORDS(n<<3))&~7))-1),___tSUBTYPED)
+#define ___GET_F64VECTOR(n)___TRACK_ALLOC(___TAG((((___WORD*)((___WORD)(___hp-___WORDS(n<<3))&~7))-1),___tSUBTYPED))
 
 #else
 
@@ -5463,24 +5475,24 @@ ___ptr[-1]=___MAKE_HD_BYTES(n<<3,___sF64VECTOR);
 ___hp[0]=___MAKE_HD_BYTES(n<<3,___sF64VECTOR);
 #define ___ADD_F64VECTOR_ELEM(i,val)((___F64*)(___hp+1))[i]=(val);
 #define ___END_ALLOC_F64VECTOR(n)___ALLOC(___WORDS(n<<3)+1);
-#define ___GET_F64VECTOR(n)___TAG((___hp-___WORDS(n<<3)-1),___tSUBTYPED)
+#define ___GET_F64VECTOR(n)___TRACK_ALLOC(___TAG((___hp-___WORDS(n<<3)-1),___tSUBTYPED))
 
 #endif
 
 #define ___BEGIN_ALLOC_VECTOR(n)___hp[0]=___MAKE_HD_WORDS(n,___sVECTOR);
 #define ___ADD_VECTOR_ELEM(i,val)___hp[i+1]=(val);
 #define ___END_ALLOC_VECTOR(n)___ALLOC(n+1);
-#define ___GET_VECTOR(n)___TAG((___hp-n-1),___tSUBTYPED)
+#define ___GET_VECTOR(n)___TRACK_ALLOC(___TAG((___hp-n-1),___tSUBTYPED))
 
 #define ___BEGIN_ALLOC_STRUCTURE(n)___hp[0]=___MAKE_HD_WORDS(n,___sSTRUCTURE);
 #define ___ADD_STRUCTURE_ELEM(i,val)___hp[i+1]=(val);
 #define ___END_ALLOC_STRUCTURE(n)___ALLOC(n+1);
-#define ___GET_STRUCTURE(n)___TAG((___hp-n-1),___tSUBTYPED)
+#define ___GET_STRUCTURE(n)___TRACK_ALLOC(___TAG((___hp-n-1),___tSUBTYPED))
 
 #define ___BEGIN_ALLOC_VALUES(n)___hp[0]=___MAKE_HD_WORDS(n,___sBOXVALUES);
 #define ___ADD_VALUES_ELEM(i,val)___hp[i+1]=(val);
 #define ___END_ALLOC_VALUES(n)___ALLOC(n+1);
-#define ___GET_VALUES(n)___TAG((___hp-n-1),___tSUBTYPED)
+#define ___GET_VALUES(n)___TRACK_ALLOC(___TAG((___hp-n-1),___tSUBTYPED))
 
 #define ___NB_INTRS 6
 #define ___INTR_SYNC_OP    0

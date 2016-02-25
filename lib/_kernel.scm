@@ -4155,6 +4155,59 @@ end-of-code
    floats
    i))
 
+(define-prim (##tracking-allocations?)
+  (##declare (not interrupts-enabled))
+  (##c-code #<<end-of-code
+
+   ___RESULT = ((___tracking_allocations) ? ___TRU : ___FAL);
+   
+end-of-code
+
+  ))
+
+(define-prim (##track-allocations)
+  (##declare (not interrupts-enabled))
+  (##c-code #<<end-of-code
+
+   ___tracking_allocations = 1;
+   ___RESULT = ___VOID;
+   
+end-of-code
+
+  ))
+
+(define-prim (##untrack-allocations)
+  (##declare (not interrupts-enabled))
+  (##c-code #<<end-of-code
+
+   ___tracking_allocations = 0;
+   ___RESULT = ___VOID;
+   
+end-of-code
+
+  ))
+
+(define-prim (##reset-allocations)
+  (##declare (not interrupts-enabled))
+  (##c-code #<<end-of-code
+
+   ___reset_allocations();
+   ___RESULT = ___VOID;
+   
+end-of-code
+
+  ))
+
+(define-prim (##snapshot-allocations)
+  (##declare (not interrupts-enabled))
+  (##c-code #<<end-of-code
+
+   ___RESULT = ___snapshot_allocations();
+   
+end-of-code
+
+  ))
+
 ;;;----------------------------------------------------------------------------
 
 ;;; Activity log operations.
