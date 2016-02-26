@@ -2165,7 +2165,7 @@ else
           result = ___FIX(___HEAP_OVERFLOW_ERR);
         else
           {
-            result = ___TAG(___hp, ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___hp, ___tSUBTYPED));
             ___HEADER(result) = ___MAKE_HD_WORDS(n, ___sVECTOR);
             ___hp += words;
           }
@@ -2231,7 +2231,7 @@ else
           result = ___FIX(___HEAP_OVERFLOW_ERR);
         else
           {
-            result = ___TAG(___hp, ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___hp, ___tSUBTYPED));
             ___HEADER(result) = ___MAKE_HD_BYTES((n<<___LCS), ___sSTRING);
             ___hp += words;
           }
@@ -2294,7 +2294,7 @@ else
           result = ___FIX(___HEAP_OVERFLOW_ERR);
         else
           {
-            result = ___TAG(___hp, ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___hp, ___tSUBTYPED));
             ___HEADER(result) = ___MAKE_HD_BYTES(n, ___sS8VECTOR);
             ___hp += words;
           }
@@ -2357,7 +2357,7 @@ else
           result = ___FIX(___HEAP_OVERFLOW_ERR);
         else
           {
-            result = ___TAG(___hp, ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___hp, ___tSUBTYPED));
             ___HEADER(result) = ___MAKE_HD_BYTES(n, ___sU8VECTOR);
             ___hp += words;
           }
@@ -2420,7 +2420,7 @@ else
           result = ___FIX(___HEAP_OVERFLOW_ERR);
         else
           {
-            result = ___TAG(___hp, ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___hp, ___tSUBTYPED));
             ___HEADER(result) = ___MAKE_HD_BYTES((n<<1), ___sS16VECTOR);
             ___hp += words;
           }
@@ -2483,7 +2483,7 @@ else
           result = ___FIX(___HEAP_OVERFLOW_ERR);
         else
           {
-            result = ___TAG(___hp, ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___hp, ___tSUBTYPED));
             ___HEADER(result) = ___MAKE_HD_BYTES((n<<1), ___sU16VECTOR);
             ___hp += words;
           }
@@ -2546,7 +2546,7 @@ else
           result = ___FIX(___HEAP_OVERFLOW_ERR);
         else
           {
-            result = ___TAG(___hp, ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___hp, ___tSUBTYPED));
             ___HEADER(result) = ___MAKE_HD_BYTES((n<<2), ___sS32VECTOR);
             ___hp += words;
           }
@@ -2609,7 +2609,7 @@ else
           result = ___FIX(___HEAP_OVERFLOW_ERR);
         else
           {
-            result = ___TAG(___hp, ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___hp, ___tSUBTYPED));
             ___HEADER(result) = ___MAKE_HD_BYTES((n<<2), ___sU32VECTOR);
             ___hp += words;
           }
@@ -2677,10 +2677,10 @@ else
         else
           {
 #if ___WS == 4
-            result = ___TAG(___CAST(___SCMOBJ*,___CAST(___SCMOBJ,___hp+2)&~7)-1,
-                            ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___CAST(___SCMOBJ*,___CAST(___SCMOBJ,___hp+2)&~7)-1,
+                            ___tSUBTYPED));
 #else
-            result = ___TAG(___hp, ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___hp, ___tSUBTYPED));
 #endif
             ___HEADER(result) = ___MAKE_HD_BYTES((n<<3), ___sS64VECTOR);
             ___hp += words;
@@ -2749,10 +2749,10 @@ else
         else
           {
 #if ___WS == 4
-            result = ___TAG(___CAST(___SCMOBJ*,___CAST(___SCMOBJ,___hp+2)&~7)-1,
-                            ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___CAST(___SCMOBJ*,___CAST(___SCMOBJ,___hp+2)&~7)-1,
+                            ___tSUBTYPED));
 #else
-            result = ___TAG(___hp, ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___hp, ___tSUBTYPED));
 #endif
             ___HEADER(result) = ___MAKE_HD_BYTES((n<<3), ___sU64VECTOR);
             ___hp += words;
@@ -2816,7 +2816,7 @@ else
           result = ___FIX(___HEAP_OVERFLOW_ERR);
         else
           {
-            result = ___TAG(___hp, ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___hp, ___tSUBTYPED));
             ___HEADER(result) = ___MAKE_HD_BYTES((n<<2), ___sF32VECTOR);
             ___hp += words;
           }
@@ -2885,10 +2885,10 @@ else
         else
           {
 #if ___WS == 4
-            result = ___TAG(___CAST(___SCMOBJ*,___CAST(___SCMOBJ,___hp+2)&~7)-1,
-                            ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___CAST(___SCMOBJ*,___CAST(___SCMOBJ,___hp+2)&~7)-1,
+                            ___tSUBTYPED));
 #else
-            result = ___TAG(___hp, ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___hp, ___tSUBTYPED));
 #endif
             ___HEADER(result) = ___MAKE_HD_BYTES((n<<3), ___sF64VECTOR);
             ___hp += words;

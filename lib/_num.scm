@@ -6116,13 +6116,13 @@ else
         else
           {
 #if ___BIG_ABASE_WIDTH == 32
-            result = ___TAG(___hp, ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___hp, ___tSUBTYPED));
 #else
 #if ___WS == 4
-            result = ___TAG(___CAST(___SCMOBJ*,___CAST(___SCMOBJ,___hp+2)&~7)-1,
-                            ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___CAST(___SCMOBJ*,___CAST(___SCMOBJ,___hp+2)&~7)-1,
+                            ___tSUBTYPED));
 #else
-            result = ___TAG(___hp, ___tSUBTYPED);
+            result = ___TRACK_ALLOC(___TAG(___hp, ___tSUBTYPED));
 #endif
 #endif
 #if ___BIG_ABASE_WIDTH == 32
