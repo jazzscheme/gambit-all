@@ -5434,7 +5434,7 @@ ___SCMOBJ ht_dst;)
   return ht_dst;
 }
 
-#define MAX_ALLOCATIONS 1024
+#define MAX_ALLOCATIONS 65536
 
 ___SCMOBJ Allocations[MAX_ALLOCATIONS];
 int AllocationsCount = 0;
@@ -6584,6 +6584,8 @@ int ___tracking_allocations = 0;
 const char* AllocationFiles[MAX_ALLOCATIONS];
 int AllocationLines[MAX_ALLOCATIONS];
 
+int AllocationsAll = 0;
+
 ___SCMOBJ ___track_allocation(___SCMOBJ obj, const char* file, int line)
 {
     if (AllocationsCount < MAX_ALLOCATIONS)
@@ -6593,17 +6595,24 @@ ___SCMOBJ ___track_allocation(___SCMOBJ obj, const char* file, int line)
         AllocationLines[AllocationsCount] = line;
         AllocationsCount++;
     }
+    AllocationsAll++;
     return obj;
 }
 
 void ___reset_allocations()
 {
     AllocationsCount = 0;
+    AllocationsAll = 0;
 }
 
 int ___count_allocations()
 {
     return AllocationsCount;
+}
+
+int ___all_allocations()
+{
+    return AllocationsAll;
 }
 
 ___SCMOBJ ___snapshot_allocations()
