@@ -6601,6 +6601,11 @@ void ___reset_allocations()
     AllocationsCount = 0;
 }
 
+int ___count_allocations()
+{
+    return AllocationsCount;
+}
+
 ___SCMOBJ ___snapshot_allocations()
 {
     ___SCMOBJ r = ___EXT(___alloc_scmobj)(NULL, ___sVECTOR, AllocationsCount*sizeof(___SCMOBJ));

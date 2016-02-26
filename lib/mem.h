@@ -245,6 +245,10 @@ extern void ___reset_allocations
    ___P((),
         ());
 
+extern int ___count_allocations
+   ___P((),
+        ());
+
 extern ___SCMOBJ ___snapshot_allocations
    ___P((),
         ());

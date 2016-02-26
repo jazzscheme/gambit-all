@@ -4198,6 +4198,16 @@ end-of-code
 
   ))
 
+(define-prim (##count-allocations)
+  (##declare (not interrupts-enabled))
+  (##c-code #<<end-of-code
+
+   ___RESULT = ___FIX(___count_allocations());
+   
+end-of-code
+
+  ))
+
 (define-prim (##snapshot-allocations)
   (##declare (not interrupts-enabled))
   (##c-code #<<end-of-code
