@@ -6599,6 +6599,17 @@ ___SCMOBJ ___track_allocation(___SCMOBJ obj, const char* file, int line)
     return obj;
 }
 
+___SCMOBJ ___update_allocation(___SCMOBJ obj, const char* file, int line)
+{
+    int n = AllocationsCount - 1;
+    if (n >= 0 && Allocations[n] == obj)
+    {
+        AllocationFiles[n] = file;
+        AllocationLines[n] = line;
+    }
+    return obj;
+}
+
 void ___reset_allocations()
 {
     AllocationsCount = 0;

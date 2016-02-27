@@ -2281,9 +2281,12 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
 #ifdef ___TRACK_ALLOCATIONS
 extern int ___tracking_allocations;
 extern ___SCMOBJ ___track_allocation(___SCMOBJ, const char*, int);
+extern ___SCMOBJ ___update_allocation(___SCMOBJ, const char*, int);
 #define ___TRACK_ALLOC(obj)(___temp = (obj), (___tracking_allocations ? ___track_allocation(___temp, __FILE__, __LINE__) : ___temp))
+#define ___UPDATE_ALLOC(obj)(___temp = (obj), (___tracking_allocations ? ___update_allocation(___temp, __FILE__, __LINE__) : ___temp))
 #else
 #define ___TRACK_ALLOC(obj)obj
+#define ___UPDATE_ALLOC(obj)obj
 #endif
 
 /* Type tests */
