@@ -5434,7 +5434,7 @@ ___SCMOBJ ht_dst;)
   return ht_dst;
 }
 
-#define MAX_ALLOCATIONS 65536
+#define MAX_ALLOCATIONS 8192
 
 ___SCMOBJ Allocations[MAX_ALLOCATIONS];
 int AllocationsCount = 0;
