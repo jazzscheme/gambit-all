@@ -241,6 +241,10 @@ extern ___F64 ___bytes_allocated
    ___P((___PSDNC),
         ());
 
+extern void ___update_stack
+   ___P((___SCMOBJ obj, ___SCMOBJ stack),
+        ());
+
 extern void ___reset_allocations
    ___P((),
         ());
@@ -266,6 +270,10 @@ extern const char* ___get_allocation_file
         ());
 
 extern int ___get_allocation_line
+   ___P((int),
+        ());
+
+extern ___SCMOBJ ___get_allocation_stack
    ___P((int),
         ());
 

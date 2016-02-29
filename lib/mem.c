@@ -5437,6 +5437,7 @@ ___SCMOBJ ht_dst;)
 #define MAX_ALLOCATIONS 8192
 
 ___SCMOBJ Allocations[MAX_ALLOCATIONS];
+___SCMOBJ AllocationStacks[MAX_ALLOCATIONS];
 int AllocationsCount = 0;
 
 ___HIDDEN void move_continuation
@@ -5529,6 +5530,7 @@ ___SIZE_TS requested_words_still;)
   ___SIZE_TS live;
 
   mark_array (___PSP Allocations, AllocationsCount);
+  mark_array (___PSP AllocationStacks, AllocationsCount);
 
   determine_occupied_words (___vms);
 
@@ -6593,6 +6595,7 @@ ___SCMOBJ ___track_allocation(___SCMOBJ obj, const char* file, int line)
         Allocations[AllocationsCount] = obj;
         AllocationFiles[AllocationsCount] = file;
         AllocationLines[AllocationsCount] = line;
+        AllocationStacks[AllocationsCount] = ___FAL;
         AllocationsCount++;
     }
     AllocationsAll++;
@@ -6608,6 +6611,15 @@ ___SCMOBJ ___update_allocation(___SCMOBJ obj, const char* file, int line)
         AllocationLines[n] = line;
     }
     return obj;
+}
+
+void ___update_stack(___SCMOBJ obj, ___SCMOBJ stack)
+{
+    int n = AllocationsCount - 1;
+    if (n >= 0 && Allocations[n] == obj)
+    {
+        AllocationStacks[n] = stack;
+    }
 }
 
 void ___reset_allocations()
@@ -6651,6 +6663,11 @@ const char* ___get_allocation_file(int n)
 int ___get_allocation_line(int n)
 {
     return AllocationLines[n];
+}
+
+___SCMOBJ ___get_allocation_stack(int n)
+{
+    return AllocationStacks[n];
 }
 
 

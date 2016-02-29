@@ -4187,6 +4187,18 @@ end-of-code
 
   ))
 
+(define-prim (##update-stack obj stack)
+  (##declare (not interrupts-enabled))
+  (##c-code #<<end-of-code
+
+   ___update_stack(___ARG1, ___ARG2);
+   ___RESULT = ___VOID;
+   
+end-of-code
+
+  obj
+  stack))
+
 (define-prim (##reset-allocations)
   (##declare (not interrupts-enabled))
   (##c-code #<<end-of-code
@@ -4242,6 +4254,11 @@ end-of-code
   (c-lambda (int)
             int
    "___return(___get_allocation_line(___arg1));"))
+
+(define-prim ##get-allocation-stack
+  (c-lambda (int)
+            scheme-object
+   "___return(___get_allocation_stack(___arg1));"))
 
 ;;;----------------------------------------------------------------------------
 
