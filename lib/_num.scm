@@ -10336,7 +10336,7 @@ ___RESULT = result;
         (macro-ratnum-make num den))))
 
 (define-prim (##exact-int->ratnum x)
-  (macro-ratnum-make x 1))
+  (%%tracking (macro-ratnum-make x 1)))
 
 (define-prim (##ratnum.round x #!optional (round-half-away-from-zero? #f))
   (let ((num (macro-ratnum-numerator x))

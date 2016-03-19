@@ -4260,6 +4260,10 @@ end-of-code
             scheme-object
    "___return(___get_allocation_stack(___arg1));"))
 
+(define ##track #f)
+(set! ##track (lambda (obj) obj))
+
+
 ;;;----------------------------------------------------------------------------
 
 ;;; Activity log operations.
