@@ -2052,6 +2052,7 @@ int subtype;)
     case ___sBOXVALUES:    return "boxvalues";
     case ___sMEROON:       return "meroon";
     case ___sJAZZ:         return "jazz";
+    case ___sJAZZSTRUCT:   return "jazzstruct";
     case ___sSYMBOL:       return "symbol";
     case ___sKEYWORD:      return "keyword";
     case ___sFRAME:        return "frame";
@@ -3886,6 +3887,11 @@ ___WORD *body;)
 
       mark_array (___PSP body+1, words-1); /* only scan free variables */
 
+      break;
+    
+    case ___sJAZZSTRUCT:
+      mark_array (___PSP body, 1);
+      
       break;
 
     default:
