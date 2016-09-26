@@ -2278,7 +2278,9 @@ ___hp = ___CAST(___WORD*, (___CAST(___WORD,___hp) + (((n)<<___LWS) + 7)) & ~7)
 
 /* Track allocations */
 
+#ifdef ___CAN_IMPORT_EXPORTED
 #define ___TRACK_ALLOCATIONS
+#endif
 
 #ifdef ___TRACK_ALLOCATIONS
 extern int ___tracking_allocations;
