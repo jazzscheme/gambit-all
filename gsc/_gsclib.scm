@@ -243,6 +243,7 @@
                    (##list target-filename)
                    output-filename-no-dir
                    (##assq 'verbose options)
+                   (##assq 'hide-console options)
                    (##list (##cons "CC_OPTIONS" cc-options)
                            (##cons "LD_OPTIONS_PRELUDE" ld-options-prelude)
                            (##cons "LD_OPTIONS" ld-options)))))
@@ -278,6 +279,7 @@
            obj-files
            output-filename-no-dir
            (##assq 'verbose options)
+           (##assq 'hide-console options)
            (##list (##cons "CC_OPTIONS" cc-options)
                    (##cons "LD_OPTIONS_PRELUDE" ld-options-prelude)
                    (##cons "LD_OPTIONS" ld-options)))))
@@ -294,6 +296,7 @@
          input-filenames
          output-filename
          verbose?
+         hide-console?
          options)
 
   (define arg-prefix
@@ -383,7 +386,7 @@
              stdin-redirection: #f
              stdout-redirection: #f
              stderr-redirection: #f
-             show-console: #f))))
+             show-console: (##not hide-console?)))))
 
 (define (##extract-target options)
   (let ((t (##assq 'target options)))
