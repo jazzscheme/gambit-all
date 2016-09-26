@@ -4159,8 +4159,10 @@ end-of-code
   (##declare (not interrupts-enabled))
   (##c-code #<<end-of-code
 
+#ifdef ___TRACK_ALLOCATIONS
    ___RESULT = ((___tracking_allocations) ? ___TRU : ___FAL);
-   
+#endif
+
 end-of-code
 
   ))
@@ -4169,9 +4171,11 @@ end-of-code
   (##declare (not interrupts-enabled))
   (##c-code #<<end-of-code
 
+#ifdef ___TRACK_ALLOCATIONS
    ___tracking_allocations = 1;
    ___RESULT = ___VOID;
-   
+#endif
+
 end-of-code
 
   ))
@@ -4180,8 +4184,10 @@ end-of-code
   (##declare (not interrupts-enabled))
   (##c-code #<<end-of-code
 
+#ifdef ___TRACK_ALLOCATIONS
    ___tracking_allocations = 0;
    ___RESULT = ___VOID;
+#endif
    
 end-of-code
 
@@ -4191,8 +4197,10 @@ end-of-code
   (##declare (not interrupts-enabled))
   (##c-code #<<end-of-code
 
+#ifdef ___TRACK_ALLOCATIONS
    ___update_stack(___ARG1, ___ARG2);
    ___RESULT = ___VOID;
+#endif
    
 end-of-code
 
@@ -4203,8 +4211,10 @@ end-of-code
   (##declare (not interrupts-enabled))
   (##c-code #<<end-of-code
 
+#ifdef ___TRACK_ALLOCATIONS
    ___reset_allocations();
    ___RESULT = ___VOID;
+#endif
    
 end-of-code
 
@@ -4214,7 +4224,9 @@ end-of-code
   (##declare (not interrupts-enabled))
   (##c-code #<<end-of-code
 
+#ifdef ___TRACK_ALLOCATIONS
    ___RESULT = ___FIX(___count_allocations());
+#endif
    
 end-of-code
 
@@ -4224,7 +4236,9 @@ end-of-code
   (##declare (not interrupts-enabled))
   (##c-code #<<end-of-code
 
+#ifdef ___TRACK_ALLOCATIONS
    ___RESULT = ___FIX(___all_allocations());
+#endif
    
 end-of-code
 
@@ -4234,7 +4248,9 @@ end-of-code
   (##declare (not interrupts-enabled))
   (##c-code #<<end-of-code
 
+#ifdef ___TRACK_ALLOCATIONS
    ___RESULT = ___snapshot_allocations();
+#endif
    
 end-of-code
 
@@ -4243,22 +4259,42 @@ end-of-code
 (define-prim ##get-allocation-object
   (c-lambda (int)
             scheme-object
-   "___return(___get_allocation_object(___arg1));"))
+   #<<end-of-code
+#ifdef ___TRACK_ALLOCATIONS
+   ___return(___get_allocation_object(___arg1));
+#endif
+end-of-code
+))
 
 (define-prim ##get-allocation-file
   (c-lambda (int)
             char-string
-   "___return((char*) ___get_allocation_file(___arg1));"))
+   #<<end-of-code
+#ifdef ___TRACK_ALLOCATIONS
+   ___return((char*) ___get_allocation_file(___arg1));
+#endif
+end-of-code
+))
 
 (define-prim ##get-allocation-line
   (c-lambda (int)
             int
-   "___return(___get_allocation_line(___arg1));"))
+   #<<end-of-code
+#ifdef ___TRACK_ALLOCATIONS
+   ___return(___get_allocation_line(___arg1));
+#endif
+end-of-code
+))
 
 (define-prim ##get-allocation-stack
   (c-lambda (int)
             scheme-object
-   "___return(___get_allocation_stack(___arg1));"))
+   #<<end-of-code
+#ifdef ___TRACK_ALLOCATIONS
+   ___return(___get_allocation_stack(___arg1));
+#endif
+end-of-code
+))
 
 (define ##track #f)
 (set! ##track (lambda (obj) obj))
