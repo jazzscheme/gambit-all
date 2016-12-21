@@ -6649,7 +6649,8 @@ ___SCMOBJ ___snapshot_allocations()
 {
     ___SCMOBJ r = ___EXT(___alloc_scmobj)(NULL, ___sVECTOR, AllocationsCount*sizeof(___SCMOBJ));
     ___SCMOBJ *ptr = ___CAST(___SCMOBJ*,___BODY(r));
-    for (int n=0; n<AllocationsCount; n++)
+    int n;
+    for (n=0; n<AllocationsCount; n++)
     {
         *ptr++ = Allocations[n];
     }
