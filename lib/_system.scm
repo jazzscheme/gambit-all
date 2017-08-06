@@ -61,7 +61,6 @@
 (define-prim (##meroon? obj) #f)
 (define-prim (##jazz? obj) #f)
 (define-prim (##jazzstruct? obj) #f)
-(define-prim (##foreign? obj) #f)
 (define-prim (##gc-hash-table? obj) #f)
 
 ;;;----------------------------------------------------------------------------
